@@ -1,0 +1,65 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*
+We need to hide some elements in Argos/Playwright screenshots
+Those elements are source of flakiness due to nondeterministic rendering
+They don't consistently render exactly the same across CI runs
+ */
+
+/******* DOCUSAURUS GLOBAL / THEME *******/
+
+/* Iframes can load lazily */
+iframe,
+/* Avatar images can be flaky due to using external sources: GitHub/Unavatar */
+.avatar__photo,
+/* Gifs load lazily and are animated */
+img[src$='.gif'],
+/* Algolia Keyboard shortcuts appear with a little delay */
+.DocSearch-Button-Keys > kbd,
+/* The live playground preview can often display dates/counters */
+[class*='playgroundPreview'] {
+  visibility: hidden;
+}
+
+/*
+Different docs last-update dates can alter layout
+"visibility: hidden" is not enough
+ */
+.theme-last-updated {
+  display: none;
+}
+
+/*
+Mermaid diagrams are rendered client-side and produce layout shifts
+ */
+.docusaurus-mermaid-container {
+  display: none;
+}
+
+/*
+Mermaid renders diagrams in a temporary <div id="d..."><svg>...</svg></div>
+appended to <body>, and removes it once done
+When captured mid-render, it adds a root-level "img" to aria snapshots
+It must remain rendered, otherwise Mermaid can't measure the diagram
+ */
+body > div[id^='d']:has(> svg) {
+  position: fixed;
+  visibility: hidden;
+}
+
+/******* DOCUSAURUS WEBSITE SPECIFIC *******/
+
+/* ProductHunt vote counter can increment at any time */
+.producthunt-badge-widget {
+  visibility: hidden;
+}
+
+/* YouTube player lite can load video lazily */
+article.yt-lite {
+  visibility: hidden;
+}
